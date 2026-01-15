@@ -1,35 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, User, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, User, Eye, EyeOff, Sun, Moon, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { api } from '../data/api';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
+  // Load remembered email
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess(false);
 
     try {
       const data = await api.post('/login', { email, password });
 
+      // Handle Remember Me
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/');
+      
+      setSuccess(true);
+      // Brief delay to show success feedback
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (err) {
       console.error(err);
-      // api.js throws generic errors or we can try to improve api.js to throw specific messages
-      // For now, let's assume generic error unless we modify api.js
-      setError('Falha no login. Verifique suas credenciais.');
+      setError('Credenciais inválidas. Verifique seu e-mail e senha.');
     } finally {
-      setLoading(false);
+      if (!success) setLoading(false);
     }
   };
 
@@ -39,7 +63,31 @@ const Login = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
+      position: 'relative'
     }}>
+      {/* Theme Toggle Button at the top right */}
+      <button 
+          onClick={toggleTheme}
+          style={{ 
+              position: 'absolute',
+              top: '2rem',
+              right: '2rem',
+              background: 'var(--bg-card)', 
+              border: 'var(--glass-border)', 
+              color: 'var(--text-primary)',
+              padding: '0.6rem',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(10px)',
+              zIndex: 10
+          }}
+      >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+
       <motion.div 
         className="glass-panel"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -62,19 +110,54 @@ const Login = () => {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Faça login para gerir suas finanças</p>
         </div>
 
-        {error && (
-          <div style={{ 
-            background: 'rgba(239, 68, 68, 0.1)', 
-            color: '#ef4444', 
-            padding: '0.75rem', 
-            borderRadius: '8px', 
-            marginBottom: '1rem',
-            textAlign: 'center',
-            fontSize: '0.9rem'
-          }}>
-            {error}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              style={{ 
+                background: 'rgba(239, 68, 68, 0.1)', 
+                color: '#ef4444', 
+                padding: '0.75rem', 
+                borderRadius: '8px', 
+                marginBottom: '1rem',
+                textAlign: 'center',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <AlertCircle size={16} />
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ 
+                background: 'rgba(16, 185, 129, 0.1)', 
+                color: '#10b981', 
+                padding: '0.75rem', 
+                borderRadius: '8px', 
+                marginBottom: '1rem',
+                textAlign: 'center',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <CheckCircle2 size={16} />
+              Login realizado com sucesso!
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
@@ -131,13 +214,47 @@ const Login = () => {
             </div>
           </div>
 
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input 
+              type="checkbox" 
+              id="rememberMe" 
+              checked={rememberMe} 
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ cursor: 'pointer' }}
+            />
+            <label htmlFor="rememberMe" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+              Lembrar-me
+            </label>
+          </div>
+
           <button 
             type="submit" 
             className="btn-primary" 
-            disabled={loading}
-            style={{ marginTop: '1rem', padding: '0.75rem', width: '100%' }}
+            disabled={loading || success}
+            style={{ 
+              marginTop: '1rem', 
+              padding: '0.75rem', 
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              background: success ? '#10b981' : undefined
+            }}
           >
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading && !success ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Entrando...
+              </>
+            ) : success ? (
+              <>
+                <CheckCircle2 size={18} />
+                Bem-vindo!
+              </>
+            ) : (
+              'Entrar'
+            )}
           </button>
         </form>
       </motion.div>

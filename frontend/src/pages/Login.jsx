@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
+import { api } from '../data/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,26 +18,16 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await api.post('/login', { email, password });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/');
-      } else {
-        setError(data.error || 'Falha no login');
-      }
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/');
     } catch (err) {
       console.error(err);
-      setError('Erro de conexão com o servidor');
+      // api.js throws generic errors or we can try to improve api.js to throw specific messages
+      // For now, let's assume generic error unless we modify api.js
+      setError('Falha no login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
     }

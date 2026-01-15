@@ -60,7 +60,7 @@ const Layout = () => {
                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                padding: '5px'
             }}>
-             <img src="/src/assets/logo_mss.png" alt="MSS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+             <img src="/logo_mss.png" alt="MSS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
            </div>
            <div>
              <h2 style={{ fontSize: '1.2rem', color: '#ffffff', fontWeight: 700, lineHeight: 1.2 }}>MSS Control</h2>

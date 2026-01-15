@@ -56,7 +56,7 @@ const Login = () => {
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255,255,255,0.1)'
           }}>
-             <img src="/src/assets/logo_mss.png" alt="MSS Logo" style={{ height: '50px', objectFit: 'contain' }} />
+             <img src="/logo_mss.png" alt="MSS Logo" style={{ height: '50px', objectFit: 'contain' }} />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>Bem-vindo de volta</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Faça login para gerir suas finanças</p>

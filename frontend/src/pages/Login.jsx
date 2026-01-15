@@ -106,8 +106,8 @@ const Login = () => {
           }}>
              <img src="/logo_mss.png" alt="MSS Logo" style={{ height: '50px', objectFit: 'contain' }} />
           </div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>Bem-vindo de volta</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Faça login para gerir suas finanças</p>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>Bem Vindo</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Faça login</p>
         </div>
 
         <AnimatePresence mode="wait">

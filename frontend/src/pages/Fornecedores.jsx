@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, Edit, Wallet, ArrowLeft } from 'lucide-react';
@@ -8,10 +7,10 @@ import LedgerTable from '../components/LedgerTable';
 
 // --- SUB-COMPONENTS (Defined outside to avoid re-creation on render) ---
 
-const ClientFormModal = ({ isOpen, onClose, formData, setFormData, onSubmit, isEditing }) => (
-  <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Editar Cliente" : "Novo Cliente"}>
+const FornecedorFormModal = ({ isOpen, onClose, formData, setFormData, onSubmit, isEditing }) => (
+  <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Editar Fornecedor" : "Novo Fornecedor"}>
       <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <input placeholder="Nome do Cliente (Obrigatório)" required value={formData.nome || ''} onChange={e=>setFormData({...formData, nome:e.target.value})} className="input-field"/>
+          <input placeholder="Nome do Fornecedor (Obrigatório)" required value={formData.nome || ''} onChange={e=>setFormData({...formData, nome:e.target.value})} className="input-field"/>
           <input placeholder="NUIT (Opcional)" value={formData.nuit || ''} onChange={e=>setFormData({...formData, nuit:e.target.value})} className="input-field"/>
           <input placeholder="Endereço (Opcional)" value={formData.endereco || ''} onChange={e=>setFormData({...formData, endereco:e.target.value})} className="input-field"/>
           <input placeholder="Contacto (Opcional)" value={formData.contacto || ''} onChange={e=>setFormData({...formData, contacto:e.target.value})} className="input-field"/>
@@ -21,25 +20,25 @@ const ClientFormModal = ({ isOpen, onClose, formData, setFormData, onSubmit, isE
   </Modal>
 );
 
-const ClientList = ({ clients, onSelect, onDelete, onOpenModal }) => (
+const FornecedorList = ({ fornecedores, onSelect, onDelete, onOpenModal }) => (
   <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2>Clientes Cadastrados</h2>
-          <button className="btn-primary" onClick={onOpenModal}><Plus size={18}/> Novo Cliente</button>
+          <h2>Fornecedores Cadastrados</h2>
+          <button className="btn-primary" onClick={onOpenModal}><Plus size={18}/> Novo Fornecedor</button>
       </div>
       <div className="grid-cards">
-          {clients.map((client) => (
+          {fornecedores.map((fornecedor) => (
               <motion.div 
-                  key={client._id} 
+                  key={fornecedor._id} 
                   className="glass-panel"
                   whileHover={{ scale: 1.02 }}
-                  onClick={() => onSelect(client)}
+                  onClick={() => onSelect(fornecedor)}
                   style={{ padding: '1.5rem', cursor: 'pointer', position: 'relative' }}
               >
-                  <button onClick={(e) => onDelete(client._id, e)} style={{ position: 'absolute', top: 10, right: 10, border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16}/></button>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{client.nome}</h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{client.email}</p>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{client.contacto}</p>
+                  <button onClick={(e) => onDelete(fornecedor._id, e)} style={{ position: 'absolute', top: 10, right: 10, border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16}/></button>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{fornecedor.nome}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>{fornecedor.email}</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{fornecedor.contacto}</p>
                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-color)' }}>
                       <Wallet size={16}/> <span>Ver Financeiro</span>
                   </div>
@@ -49,13 +48,13 @@ const ClientList = ({ clients, onSelect, onDelete, onOpenModal }) => (
   </div>
 );
 
-const ClientDetails = ({ client, onBack, onEdit }) => (
+const FornecedorDetails = ({ fornecedor, onBack, onEdit }) => (
     <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <button onClick={onBack} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ArrowLeft size={18}/> Voltar para Lista
             </button>
-            <button onClick={() => onEdit(client)} className="btn-ghost" style={{ color: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}>
+            <button onClick={() => onEdit(fornecedor)} className="btn-ghost" style={{ color: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}>
                 <Edit size={18} style={{ marginRight: '0.5rem' }}/> Editar Informações
             </button>
         </div>
@@ -63,42 +62,42 @@ const ClientDetails = ({ client, onBack, onEdit }) => (
         <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                 <div>
-                    <p className="label">Cliente</p>
-                    <h3>{client.nome}</h3>
+                    <p className="label">Fornecedor</p>
+                    <h3>{fornecedor.nome}</h3>
                 </div>
                 <div>
                     <p className="label">NUIT</p>
-                    <p>{client.nuit}</p>
+                    <p>{fornecedor.nuit}</p>
                 </div>
                 <div>
                     <p className="label">Endereço</p>
-                    <p>{client.endereco}</p>
+                    <p>{fornecedor.endereco}</p>
                 </div>
                 <div>
                     <p className="label">Contacto</p>
-                    <p>{client.contacto}</p>
+                    <p>{fornecedor.contacto}</p>
                 </div>
                  <div>
                     <p className="label">Email</p>
-                    <p>{client.email}</p>
+                    <p>{fornecedor.email}</p>
                 </div>
             </div>
         </div>
 
         <LedgerTable 
-          title={`Conta Corrente: ${client.nome}`}
-          endpoint={`/clientes/${client._id}/transactions`}
+          title={`Conta Corrente: ${fornecedor.nome}`}
+          endpoint={`/fornecedores/${fornecedor._id}/transactions`}
           entityLabel="Referência / Entidade"
         />
     </div>
 );
 
-const Clientes = () => {
+const Fornecedores = () => {
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'details'
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [clients, setClients] = useState([]);
+  const [selectedFornecedor, setSelectedFornecedor] = useState(null);
+  const [fornecedores, setFornecedores] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingClient, setEditingClient] = useState(null); // State to track client being edited
+  const [editingFornecedor, setEditingFornecedor] = useState(null);
   const [formData, setFormData] = useState({
     nome: '',
     nuit: '',
@@ -107,75 +106,75 @@ const Clientes = () => {
     email: ''
   });
 
-  const fetchClients = useCallback(async () => {
+  const fetchFornecedores = useCallback(async () => {
     try {
-      const data = await api.get('/clientes');
-      setClients(data);
+      const data = await api.get('/fornecedores');
+      setFornecedores(data);
     } catch (err) {
       console.error(err);
     }
   }, []);
 
   useEffect(() => {
-    fetchClients();
-  }, [fetchClients]);
+    fetchFornecedores();
+  }, [fetchFornecedores]);
 
-  const handleOpenModal = (client = null) => {
-    if (client) {
-        setEditingClient(client);
+  const handleOpenModal = (fornecedor = null) => {
+    if (fornecedor) {
+        setEditingFornecedor(fornecedor);
         setFormData({
-            nome: client.nome,
-            nuit: client.nuit,
-            endereco: client.endereco,
-            contacto: client.contacto,
-            email: client.email
+            nome: fornecedor.nome,
+            nuit: fornecedor.nuit,
+            endereco: fornecedor.endereco,
+            contacto: fornecedor.contacto,
+            email: fornecedor.email
         });
     } else {
-        setEditingClient(null);
+        setEditingFornecedor(null);
         setFormData({ nome: '', nuit: '', endereco: '', contacto: '', email: '' });
     }
     setIsModalOpen(true);
   };
 
-  const handleSaveClient = async (e) => {
+  const handleSaveFornecedor = async (e) => {
     e.preventDefault();
     try {
-      if (editingClient) {
-          // Update existing client
-          await api.put(`/clientes/${editingClient._id}`, formData);
-          // If we are in details view, update the selected client as well
-          if (selectedClient && selectedClient._id === editingClient._id) {
-              setSelectedClient({ ...editingClient, ...formData });
+      if (editingFornecedor) {
+          // Update existing
+          await api.put(`/fornecedores/${editingFornecedor._id}`, formData);
+          // If we are in details view, update the selected supplier as well
+          if (selectedFornecedor && selectedFornecedor._id === editingFornecedor._id) {
+              setSelectedFornecedor({ ...editingFornecedor, ...formData });
           }
       } else {
-          // Create new client
-          await api.post('/clientes', formData);
+          // Create new
+          await api.post('/fornecedores', formData);
       }
       
       setIsModalOpen(false);
-      setEditingClient(null);
+      setEditingFornecedor(null);
       setFormData({ nome: '', nuit: '', endereco: '', contacto: '', email: '' });
-      fetchClients();
+      fetchFornecedores();
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar cliente');
+      alert('Erro ao salvar fornecedor');
     }
   };
 
-  const handleSelectClient = (client) => {
-    setSelectedClient(client);
+  const handleSelectFornecedor = (fornecedor) => {
+    setSelectedFornecedor(fornecedor);
     setViewMode('details');
   };
 
-  const deleteClient = async (id, e) => {
+  const deleteFornecedor = async (id, e) => {
       e.stopPropagation();
-      if(window.confirm("Apagar cliente? (Isso não apaga o histórico financeiro por segurança)")) {
+      if(window.confirm("Apagar fornecedor? (Isso não apaga o histórico financeiro por segurança)")) {
           try {
-            await api.delete(`/clientes/${id}`);
-            fetchClients();
+            await api.delete(`/fornecedores/${id}`);
+            fetchFornecedores();
           } catch(err) {
             console.error(err);
-            alert("Erro ao apagar cliente");
+            alert("Erro ao apagar fornecedor");
           }
       }
   }
@@ -183,30 +182,30 @@ const Clientes = () => {
   return (
     <div>
         {viewMode === 'list' ? (
-             <ClientList 
-                 clients={clients} 
-                 onSelect={handleSelectClient} 
-                 onDelete={deleteClient} 
+             <FornecedorList 
+                 fornecedores={fornecedores} 
+                 onSelect={handleSelectFornecedor} 
+                 onDelete={deleteFornecedor} 
                  onOpenModal={() => handleOpenModal(null)} 
              />
         ) : (
-            <ClientDetails 
-                client={selectedClient} 
+            <FornecedorDetails 
+                fornecedor={selectedFornecedor} 
                 onBack={() => setViewMode('list')} 
                 onEdit={handleOpenModal}
             />
         )}
 
-        <ClientFormModal 
+        <FornecedorFormModal 
             isOpen={isModalOpen} 
             onClose={() => setIsModalOpen(false)} 
             formData={formData} 
             setFormData={setFormData}
-            onSubmit={handleSaveClient}
-            isEditing={!!editingClient}
+            onSubmit={handleSaveFornecedor}
+            isEditing={!!editingFornecedor}
         />
     </div>
   );
 };
 
-export default Clientes;
+export default Fornecedores;

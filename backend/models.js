@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const LedgerSchema = {
@@ -19,10 +18,19 @@ const BancoSchema = new mongoose.Schema(LedgerSchema, { timestamps: true });
 // Client is now an Entity Profile
 const ClienteSchema = new mongoose.Schema({
   nome: { type: String, required: true },
-  nuit: { type: String, required: true },
-  endereco: { type: String, required: true },
-  contacto: { type: String, required: true },
-  email: { type: String, required: true },
+  nuit: { type: String, default: '' },
+  endereco: { type: String, default: '' },
+  contacto: { type: String, default: '' },
+  email: { type: String, default: '' },
+}, { timestamps: true });
+
+// Supplier Profile
+const FornecedorSchema = new mongoose.Schema({
+  nome: { type: String, required: true },
+  nuit: { type: String, default: '' },
+  endereco: { type: String, default: '' },
+  contacto: { type: String, default: '' },
+  email: { type: String, default: '' },
 }, { timestamps: true });
 
 // Ledger specifically for a Client
@@ -31,6 +39,14 @@ const ClientTransactionSchema = new mongoose.Schema({
   clienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente', required: true },
   mes: { type: Number, required: true }, // 1-12
   ano: { type: Number, required: true }  // 2026
+}, { timestamps: true });
+
+// Ledger specifically for a Supplier
+const SupplierTransactionSchema = new mongoose.Schema({
+  ...LedgerSchema,
+  fornecedorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Fornecedor', required: true },
+  mes: { type: Number, required: true },
+  ano: { type: Number, required: true }
 }, { timestamps: true });
 
 const UserSchema = new mongoose.Schema({
@@ -44,5 +60,7 @@ module.exports = {
   Banco: mongoose.model('Banco', BancoSchema),
   Cliente: mongoose.model('Cliente', ClienteSchema),
   ClientTransaction: mongoose.model('ClientTransaction', ClientTransactionSchema),
+  Fornecedor: mongoose.model('Fornecedor', FornecedorSchema),
+  SupplierTransaction: mongoose.model('SupplierTransaction', SupplierTransactionSchema),
   User: mongoose.model('User', UserSchema)
 };

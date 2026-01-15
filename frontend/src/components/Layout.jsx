@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Building2, Users, PieChart, LogOut, Menu, Moon, Sun } from 'lucide-react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Wallet, Building2, Users, LogOut, Sun, Moon, Truck } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -26,7 +25,15 @@ const SidebarItem = ({ to, icon: Icon, label }) => {
 
 const Layout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+
+  const handleLogout = () => {
+      // Direct logout to avoid browser blocking issues
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+  };
 
   // Map route to title
   const getTitle = () => {
@@ -35,6 +42,7 @@ const Layout = () => {
       case '/caixa': return 'Fluxo de Caixa';
       case '/bancos': return 'Contas Bancárias';
       case '/clientes': return 'Gestão de Clientes';
+      case '/fornecedores': return 'Gestão de Fornecedores';
       default: return 'Mapa de Controle';
     }
   };
@@ -66,14 +74,15 @@ const Layout = () => {
           <SidebarItem to="/caixa" icon={Wallet} label="Fluxo de Caixa" />
           <SidebarItem to="/bancos" icon={Building2} label="Contas Bancárias" />
           <SidebarItem to="/clientes" icon={Users} label="Gestão de Clientes" />
+          <SidebarItem to="/fornecedores" icon={Truck} label="Fornecedores" />
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
              <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontWeight: 600, paddingLeft: '1rem', marginBottom: '0.5rem' }}>Conta</p>
-             <div className="nav-item" style={{ cursor: 'pointer' }}>
+             <button className="nav-item" style={{ cursor: 'pointer', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit', fontSize: 'inherit' }} onClick={handleLogout}>
                 <LogOut size={20} />
                 <span>Sair do Sistema</span>
-             </div>
+             </button>
              
              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.5rem', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px' }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: '#e63946' }}>AD</div>

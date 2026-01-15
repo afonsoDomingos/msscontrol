@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Caixa from './pages/Caixa';
 import Bancos from './pages/Bancos';
 import Clientes from './pages/Clientes';
+import Fornecedores from './pages/Fornecedores';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="caixa" element={<Caixa />} />
               <Route path="bancos" element={<Bancos />} />
               <Route path="clientes" element={<Clientes />} />
+              <Route path="fornecedores" element={<Fornecedores />} />
             </Route>
           </Route>
 

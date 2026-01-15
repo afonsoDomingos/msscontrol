@@ -230,6 +230,8 @@ body {
   top: 0;
   height: 100vh;
   box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  z-index: 100;
 }
 
 .main-content {
@@ -279,4 +281,79 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.25rem;
+}
+
+/* --- Print Styles --- */
+@media print {
+  /* Reset Backgrounds */
+  body {
+    background: white !important;
+    color: black !important;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Hide UI Elements */
+  .sidebar, .btn-primary, .btn-ghost, .no-print, header, button, .modal, .modal-backdrop {
+    display: none !important;
+  }
+
+  /* Layout Adjustments */
+  .app-container {
+    display: block !important;
+    height: auto;
+    min-height: auto;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  /* Show Print Header */
+  .print-header {
+    display: block !important;
+  }
+
+  /* Table Styling for Print */
+  .glass-panel {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    backdrop-filter: none !important;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px; /* Smaller font for A4 density */
+    color: black !important;
+  }
+  
+  .data-table th, .data-table td {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    color: black !important;
+    text-align: left;
+  }
+  
+  .data-table th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+  }
+
+  /* Remove Actions Column */
+  .data-table th:last-child, .data-table td:last-child {
+    display: none !important;
+  }
+  
+  /* Ensure Colors are printed for Debut/Credit but readable */
+  .data-table td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

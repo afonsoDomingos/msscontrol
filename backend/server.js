@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Caixa, Banco, Cliente, User } = require('./models');
+const { Caixa, Banco, Cliente, Fornecedor, User } = require('./models');
 const authMiddleware = require('./middleware/auth');
 
 const app = express();
@@ -249,6 +249,69 @@ app.post('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
     const newItem = new (mongoose.model('ClientTransaction'))({
         ...req.body,
         clienteId: id
+    });
+    await newItem.save();
+    res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Fornecedores Profile CRUD
+app.get('/api/fornecedores', authMiddleware, async (req, res) => {
+  try {
+    const items = await Fornecedor.find().sort({ nome: 1 });
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/fornecedores', authMiddleware, async (req, res) => {
+  try {
+    const newItem = new Fornecedor(req.body);
+    await newItem.save();
+    res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/fornecedores/:id', authMiddleware, async (req, res) => {
+  try {
+    const updatedItem = await Fornecedor.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/fornecedores/:id', authMiddleware, async (req, res) => {
+  try {
+    await Fornecedor.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 7. Fornecedor Ledger/Transactions
+app.get('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const items = await mongoose.model('SupplierTransaction').find({ fornecedorId: id }).sort({ data: -1, createdAt: -1 });
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const newItem = new (mongoose.model('SupplierTransaction'))({
+        ...req.body,
+        fornecedorId: id
     });
     await newItem.save();
     res.json(newItem);

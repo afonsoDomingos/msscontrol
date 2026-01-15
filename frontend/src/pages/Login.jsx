@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, User } from 'lucide-react';
+import { Lock, User, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Login = () => {
         setError(data.error || 'Falha no login');
       }
     } catch (err) {
+      console.error(err);
       setError('Erro de conexão com o servidor');
     } finally {
       setLoading(false);
@@ -91,6 +93,8 @@ const Login = () => {
               <User size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
               <input 
                 type="email" 
+                name="email"
+                autoComplete="email"
                 className="input-field"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -106,14 +110,34 @@ const Login = () => {
             <div style={{ position: 'relative' }}>
               <Lock size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)', zIndex: 1 }} />
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"}
+                name="password"
+                autoComplete="current-password"
                 className="input-field"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ paddingLeft: '2.5rem' }}
+                style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '12px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

@@ -1,0 +1,15 @@
+--- Detailed Analysis of 'Uba' ---
+Found potential header at row 10
+Columns found: ['N/O', 'Data', 'Descrição', 'Entradas', 'Saidas', 'Saldo', 'Observação']
+
+First 5 data rows:
+   N/O  Data Descrição  Entradas  Saidas  Saldo Observação
+0  NaN   NaN       NaN       NaN     NaN    NaN        NaN
+1  NaN   NaN       NaN       NaN     NaN    0.0        NaN
+2  NaN   NaN       NaN       NaN     NaN    0.0        NaN
+3  NaN   NaN       NaN       NaN     NaN    0.0        NaN
+4  NaN   NaN       NaN       NaN     NaN    0.0        NaN
+
+Numeric Summaries for ['Entradas', 'Saidas']:
+Total Entradas: 0.00
+Total Saidas: 0.00

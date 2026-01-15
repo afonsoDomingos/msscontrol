@@ -1,0 +1,166 @@
+SHEETS: ['Acess', 'EXTRATO PURE DIETS', 'Uba', 'Caixa Outubro', 'Saidas nao ducumentadas', 'C&J logistica', '25% De Agenciamento', 'Acacio despachante', 'Sheet2', 'Pure diets', 'Caixa novembro', 'Caixa Dezembro', 'Regularizacao C&j', 'Regularizacao Pure Diets', 'TCO']
+
+--- SHEET: Acess ---
+SHAPE: (323, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', ' ', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3      Unnamed: 5 Unnamed: 6
+0                                    Nuit:         NaN        NaN        NaN  NaN        NaN        NaN
+1                                 Periodo:         NaN        NaN        NaN  NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN  NaN        NaN        NaN
+3              Entradas e Saidas bancárias         NaN        NaN        NaN  NaN        NaN        NaN
+4                                       NaN        NaN        NaN        NaN  NaN        NaN        NaN
+
+--- SHEET: EXTRATO PURE DIETS ---
+SHAPE: (143, 8)
+COLUMNS: ['MOZAMBIQUE SUPPORT SERVICES, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7']
+HEAD:
+  MOZAMBIQUE SUPPORT SERVICES, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7
+0                           Nuit:   401761349        NaN        NaN        NaN        NaN        NaN        NaN
+1                        Periodo:        2025        NaN        NaN        NaN        NaN        NaN        NaN
+2                              NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                              NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                              NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Uba ---
+SHAPE: (317, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6
+0                                    Nuit:         NaN        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:         NaN        NaN        NaN        NaN        NaN        NaN
+2                                         0        NaN        NaN        NaN        NaN        NaN        NaN
+3              Entradas e Saidas bancárias         NaN        NaN        NaN        NaN        NaN        NaN
+4                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Caixa Outubro ---
+SHAPE: (39, 9)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8
+0                                    Nuit:   401761349        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:        2025        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                   Entradas e Saidas Caixa        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Saidas nao ducumentadas ---
+SHAPE: (93, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+       Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6
+0                                         Nuit:         NaN        NaN        NaN        NaN        NaN        NaN
+1                                      Periodo:         NaN        NaN        NaN        NaN        NaN        NaN
+2                                            NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3  Entradas e Saidas Bancarias  Nao Documentadas        NaN        NaN        NaN        NaN        NaN        NaN
+4                                            NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: C&J logistica ---
+SHAPE: (82, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6
+0                                    Nuit:   401761349        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:         NaN        NaN        NaN        NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4     Extracto de Clientes  : C&J LOGISTICA        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: 25% De Agenciamento ---
+SHAPE: (91, 13)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12']
+HEAD:
+  Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5  Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9 Unnamed: 10 Unnamed: 11 Unnamed: 12
+0        NaN        NaN   Setembro        NaN        NaN        NaN         NaN        NaN        NaN    Outubro         NaN         NaN         NaN
+1        NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN        NaN        NaN         NaN         NaN         NaN
+2        NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN        NaN        NaN         NaN         NaN         NaN
+3        NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN        NaN        NaN         NaN         NaN         NaN
+4        NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN        NaN        NaN         NaN         NaN         NaN
+
+--- SHEET: Acacio despachante ---
+SHAPE: (51, 11)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10']
+HEAD:
+  Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5  Unnamed: 6  Unnamed: 7  Unnamed: 8 Unnamed: 9 Unnamed: 10
+0        NaN        NaN        NaN        NaN        NaN        NaN         NaN         NaN         NaN        NaN         NaN
+1        NaN        NaN        NaN        NaN        NaN        NaN         NaN         NaN         NaN        NaN         NaN
+2        NaN        NaN        NaN        NaN        NaN        NaN         NaN         NaN         NaN        NaN         NaN
+3        NaN        NaN        NaN        NaN        NaN        NaN         NaN         NaN         NaN        NaN         NaN
+4        NaN        NaN        NaN        NaN        NaN        NaN         NaN         NaN         NaN        NaN         NaN
+
+--- SHEET: Sheet2 ---
+SHAPE: (28, 8)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7']
+HEAD:
+   Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3  Unnamed: 4  Unnamed: 5 Unnamed: 6 Unnamed: 7
+0         NaN        NaN        NaN        NaN         NaN         NaN        NaN        NaN
+1         NaN        NaN        NaN        NaN         NaN         NaN        NaN        NaN
+2         NaN        NaN        NaN        NaN         NaN         NaN        NaN        NaN
+3         NaN        NaN        NaN        NaN         NaN         NaN        NaN        NaN
+4         NaN        NaN        NaN        NaN         NaN         NaN        NaN        NaN
+
+--- SHEET: Pure diets ---
+SHAPE: (37, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6
+0                                    Nuit:         NaN        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:     OUTUBRO        NaN        NaN        NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                  Extracto de Clientes  à         NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Caixa novembro ---
+SHAPE: (135, 9)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8
+0                                    Nuit:   401761349        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:        2025        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                   Entradas e Saidas Caixa        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Caixa Dezembro ---
+SHAPE: (39, 11)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 0, 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10']
+HEAD:
+   Unnamed: 0  Unnamed: 1                        0 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7  Unnamed: 8 Unnamed: 9 Unnamed: 10
+0         NaN         NaN                        0  401761349        NaN        NaN        NaN        NaN         NaN        NaN         NaN
+1         NaN         NaN                        0       2025        NaN        NaN        NaN        NaN         NaN        NaN         NaN
+2         NaN         NaN                      NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN         NaN
+3         NaN         NaN  Entradas e Saidas Caixa        NaN        NaN        NaN        NaN        NaN         NaN        NaN         NaN
+4         NaN         NaN                      NaN        NaN        NaN        NaN        NaN        NaN         NaN        NaN         NaN
+
+--- SHEET: Regularizacao C&j ---
+SHAPE: (20, 8)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7']
+HEAD:
+                    Unnamed: 0  Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7
+0  EXTRATO Agosto ate Dezembro         NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1                          NaN         NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2         a) C&J LOGISTICA LDA         NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3         MAPA DE CONTROLO MTR         NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                          NaN         NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: Regularizacao Pure Diets ---
+SHAPE: (56, 9)
+COLUMNS: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8']
+HEAD:
+                    Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8
+0  EXTRATO Agosto ate Dezembro        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1                          NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2         a) C&J LOGISTICA LDA        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                     Novembro        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                          NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+
+--- SHEET: TCO ---
+SHAPE: (20, 7)
+COLUMNS: ['Empresa: Mozambique Support Services, Lda', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6']
+HEAD:
+  Empresa: Mozambique Support Services, Lda Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6
+0                                    Nuit:         NaN        NaN        NaN        NaN        NaN        NaN
+1                                 Periodo:         NaN        NaN        NaN        NaN        NaN        NaN
+2                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3                                       NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4                               Dividas MSS        NaN        NaN        NaN        NaN        NaN        NaN

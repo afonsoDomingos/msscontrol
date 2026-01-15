@@ -1,0 +1,15 @@
+--- Detailed Analysis of 'Caixa Outubro' ---
+Found potential header at row 10
+Columns found: ['N/O', 'Data', 'Descrição', 'N° Documento', 'Nome da Entidade', 'Entradas', 'Saidas', 'Saldo', 'Observação']
+
+First 5 data rows:
+   N/O  Data                    Descrição  N° Documento       Nome da Entidade  Entradas   Saidas     Saldo Observação
+0  1.0   NaN             Reforco de caixa           NaN                    NaN   50000.0      NaN       NaN        NaN
+1  2.0   NaN  Autenticacaoo de documentos           NaN                Notario       NaN  2000.00  48000.00        NaN
+2  3.0   NaN                         INSS           NaN                   INSS       NaN  8998.00  39002.00        NaN
+3  4.0   NaN                        Aviso           NaN  Autoridade tributaria       NaN  6152.46  32849.54        NaN
+4  NaN   NaN                          NaN           NaN                    NaN       NaN      NaN       NaN        NaN
+
+Numeric Summaries for ['Entradas', 'Saidas']:
+Total Entradas: 110,000.00
+Total Saidas: 109,500.00

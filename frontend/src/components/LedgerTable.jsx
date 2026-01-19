@@ -71,11 +71,18 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
 
   const parseCurrency = (value) => {
     if (!value) return 0;
-    // Remote all spaces
+    if (typeof value === 'number') return value;
+
     let clean = value.toString().replace(/\s/g, '');
-    // Replace comma with dot
-    clean = clean.replace(',', '.');
-    // Check if result is valid number
+
+    // If it has both dots and commas, dots are likely thousands
+    if (clean.includes('.') && clean.includes(',')) {
+      clean = clean.replace(/\./g, '').replace(',', '.');
+    } else {
+      // If only commas, replace with dots
+      clean = clean.replace(/,/g, '.');
+    }
+
     const num = parseFloat(clean);
     return isNaN(num) ? 0 : num;
   };
@@ -275,13 +282,13 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Débito</label>
-              <input type="number" step="0.01" value={formData.entrada || ''} onChange={e => setFormData({ ...formData, entrada: e.target.value })}
-                className="input-field" placeholder="0.00" />
+              <input type="text" value={formData.entrada || ''} onChange={e => setFormData({ ...formData, entrada: e.target.value })}
+                className="input-field" placeholder="0,00" />
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Crédito</label>
-              <input type="number" step="0.01" value={formData.saida || ''} onChange={e => setFormData({ ...formData, saida: e.target.value })}
-                className="input-field" placeholder="0.00" />
+              <input type="text" value={formData.saida || ''} onChange={e => setFormData({ ...formData, saida: e.target.value })}
+                className="input-field" placeholder="0,00" />
             </div>
           </div>
 

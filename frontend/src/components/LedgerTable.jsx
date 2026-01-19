@@ -69,6 +69,17 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
     }
   };
 
+  const parseCurrency = (value) => {
+    if (!value) return 0;
+    // Remote all spaces
+    let clean = value.toString().replace(/\s/g, '');
+    // Replace comma with dot
+    clean = clean.replace(',', '.');
+    // Check if result is valid number
+    const num = parseFloat(clean);
+    return isNaN(num) ? 0 : num;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -76,18 +87,15 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
     setIsSubmitting(true);
     try {
       let saldoToSave = 0;
-      const entrada = Number(formData.entrada) || 0;
-      const saida = Number(formData.saida) || 0;
+      // Use custom parser instead of direct Number()
+      const entrada = parseCurrency(formData.entrada);
+      const saida = parseCurrency(formData.saida);
 
       // Ensure we are working with numbers for the previous balance
       const lastBalance = data.length > 0 ? Number(data[0].saldo || 0) : 0;
 
       if (!editingItem) {
         // NEW ENTRY
-        // Simple logic: Latest Balance + Input - Output
-        // Note: This assumes the new entry is chronologically after the latest entry.
-        // If inserting in the past, this logic is flawed without a full re-calc, 
-        // but fits the current simple architecture.
         if (data.length > 0) {
           saldoToSave = lastBalance + entrada - saida;
         } else {
@@ -95,8 +103,6 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
         }
       } else {
         // EDITING
-        // Recalculate based on the item's *own* previous state
-        // Reconstruct what the balance was *before* this transaction applied
         const oldEntrada = Number(editingItem.entrada) || 0;
         const oldSaida = Number(editingItem.saida) || 0;
         const oldSaldo = Number(editingItem.saldo) || 0;
@@ -110,6 +116,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
       const mes = dateDate.getMonth() + 1;
       const ano = dateDate.getFullYear();
 
+      // We still save entrada/saida as numbers in the DB
       const payload = { ...formData, entrada, saida, saldo: saldoToSave, mes, ano };
 
       if (editingItem) {

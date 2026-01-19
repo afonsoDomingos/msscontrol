@@ -79,13 +79,30 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
       const entrada = Number(formData.entrada) || 0;
       const saida = Number(formData.saida) || 0;
 
-      if (!editingItem && data.length > 0) {
-        saldoToSave = (data[0].saldo || 0) + entrada - saida;
-      } else if (!editingItem && data.length === 0) {
-        saldoToSave = entrada - saida;
+      // Ensure we are working with numbers for the previous balance
+      const lastBalance = data.length > 0 ? Number(data[0].saldo || 0) : 0;
+
+      if (!editingItem) {
+        // NEW ENTRY
+        // Simple logic: Latest Balance + Input - Output
+        // Note: This assumes the new entry is chronologically after the latest entry.
+        // If inserting in the past, this logic is flawed without a full re-calc, 
+        // but fits the current simple architecture.
+        if (data.length > 0) {
+          saldoToSave = lastBalance + entrada - saida;
+        } else {
+          saldoToSave = entrada - saida;
+        }
       } else {
-        saldoToSave = (editingItem ? editingItem.saldo : (entrada - saida));
-        if (data.length > 0 && !editingItem) saldoToSave = (data[0].saldo || 0) + entrada - saida;
+        // EDITING
+        // Recalculate based on the item's *own* previous state
+        // Reconstruct what the balance was *before* this transaction applied
+        const oldEntrada = Number(editingItem.entrada) || 0;
+        const oldSaida = Number(editingItem.saida) || 0;
+        const oldSaldo = Number(editingItem.saldo) || 0;
+
+        const balanceBeforeThisTx = oldSaldo - oldEntrada + oldSaida;
+        saldoToSave = balanceBeforeThisTx + entrada - saida;
       }
 
       // Derive Month/Year if needed

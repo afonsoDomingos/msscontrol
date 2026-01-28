@@ -42,8 +42,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- Routes ---
 
-// --- Routes ---
-
 // 0. Auth Routes
 app.post('/api/login', async (req, res) => {
   try {

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Plus, Trash2, Edit, Printer } from 'lucide-react';
 import Modal from './Modal';
 import { api } from '../data/api';
+import logo from '../assets/logo.png';
 
 const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
   const [data, setData] = useState([]);
@@ -157,9 +158,12 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
       {/* Print Header - Visible only on Print */}
       <div className="print-header" style={{ display: 'none', marginBottom: '2rem', borderBottom: '2px solid #000', paddingBottom: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>MSS Control</h1>
-            <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}>Relatório Financeiro / Extrato</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <img src={logo} alt="MSS Logo" style={{ height: '50px', width: 'auto' }} />
+            <div>
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>MSS Control</h1>
+              <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}>Relatório Financeiro / Extrato</p>
+            </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <p style={{ margin: 0, fontSize: '12px' }}>Data de Emissão: {new Date().toLocaleDateString()}</p>

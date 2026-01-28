@@ -29,15 +29,15 @@ const Layout = () => {
   const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
-      // Direct logout to avoid browser blocking issues
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      navigate('/login');
+    // Direct logout to avoid browser blocking issues
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   // Map route to title
   const getTitle = () => {
-    switch(location.pathname) {
+    switch (location.pathname) {
       case '/': return 'Dashboard Financeiro';
       case '/caixa': return 'Fluxo de Caixa';
       case '/bancos': return 'Contas Bancárias';
@@ -52,20 +52,20 @@ const Layout = () => {
       {/* Sidebar */}
       <aside className="sidebar">
         <div style={{ paddingBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-           <div style={{ 
-               width: 50, height: 50, 
-               background: 'rgba(255,255,255,0.95)', 
-               borderRadius: '12px', 
-               display: 'flex', alignItems: 'center', justifyContent: 'center', 
-               boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-               padding: '5px'
-            }}>
-             <img src="/logo_mss.png" alt="MSS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-           </div>
-           <div>
-             <h2 style={{ fontSize: '1.2rem', color: '#ffffff', fontWeight: 700, lineHeight: 1.2 }}>MSS Control</h2>
-             <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)', letterSpacing: '0.05em' }}>BUSINESS SUPPORT</p>
-           </div>
+          <div style={{
+            width: 50, height: 50,
+            background: 'rgba(255,255,255,0.95)',
+            borderRadius: '12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+            padding: '5px'
+          }}>
+            <img src="/logo_mss.png" alt="MSS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <div>
+            <h2 style={{ fontSize: '1.2rem', color: '#ffffff', fontWeight: 700, lineHeight: 1.2 }}>MSS Control</h2>
+            <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)', letterSpacing: '0.05em' }}>BUSINESS SUPPORT</p>
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
@@ -78,19 +78,24 @@ const Layout = () => {
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-             <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontWeight: 600, paddingLeft: '1rem', marginBottom: '0.5rem' }}>Conta</p>
-             <button className="nav-item" style={{ cursor: 'pointer', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit', fontSize: 'inherit' }} onClick={handleLogout}>
-                <LogOut size={20} />
-                <span>Sair do Sistema</span>
-             </button>
-             
-             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.5rem', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px' }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: '#e63946' }}>AD</div>
-                <div>
-                   <p style={{ fontSize: '0.9rem', fontWeight: 500, color: '#ffffff' }}>Administrador</p>
-                   <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>admin@mss.co.mz</p>
-                </div>
-             </div>
+          <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontWeight: 600, paddingLeft: '1rem', marginBottom: '0.5rem' }}>Conta</p>
+          <button className="nav-item" style={{ cursor: 'pointer', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit', fontSize: 'inherit' }} onClick={handleLogout}>
+            <LogOut size={20} />
+            <span>Sair do Sistema</span>
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.5rem', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px' }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: '#e63946' }}>AD</div>
+            <div>
+              <p style={{ fontSize: '0.9rem', fontWeight: 500, color: '#ffffff' }}>Administrador</p>
+              <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>admin@mss.co.mz</p>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '1.5rem', padding: '0.75rem', textAlign: 'center' }}>
+            <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Desenvolvido por</p>
+            <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ffffff', marginTop: '0.2rem' }}>Vibe</p>
+          </div>
         </div>
       </aside>
 
@@ -107,39 +112,39 @@ const Layout = () => {
               Bem-vindo ao painel de controle executivo.
             </p>
           </motion.div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              {/* Theme Toggle */}
-              <button 
-                  onClick={toggleTheme}
-                  style={{ 
-                      background: 'var(--bg-card)', 
-                      border: 'var(--glass-border)', 
-                      color: 'var(--text-primary)',
-                      padding: '0.6rem',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                  }}
-              >
-                  {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
 
-              <div className="glass-panel" style={{ padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 12px rgba(16,185,129,0.5)' }}></div>
-                 <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>Sistema Online</span>
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'var(--bg-card)',
+                border: 'var(--glass-border)',
+                color: 'var(--text-primary)',
+                padding: '0.6rem',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            <div className="glass-panel" style={{ padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 12px rgba(16,185,129,0.5)' }}></div>
+              <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>Sistema Online</span>
+            </div>
           </div>
         </header>
 
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-             <Outlet />
+          <Outlet />
         </motion.div>
       </main>
     </div>

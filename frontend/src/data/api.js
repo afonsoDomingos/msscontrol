@@ -9,12 +9,12 @@ export const api = {
 
     const res = await fetch(`${API_URL}${endpoint}`, { headers });
     if (!res.ok) {
-        if (res.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-        }
-        throw new Error('API Request Failed');
+      if (res.status === 401) {
+        // Token expired or invalid
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+      throw new Error('API Request Failed');
     }
     return res.json();
   },
@@ -57,6 +57,20 @@ export const api = {
       headers
     });
     if (!res.ok) throw new Error('API Request Failed');
+    return res.json();
+  },
+
+  upload: async (endpoint, formData) => {
+    const token = localStorage.getItem('token');
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    if (!res.ok) throw new Error('Falha no upload do arquivo');
     return res.json();
   }
 };

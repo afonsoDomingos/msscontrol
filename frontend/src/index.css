@@ -2,24 +2,25 @@
 
 :root {
   /* Default Dark Mode */
-  --bg-primary: #0f172a; 
-  --bg-secondary: #7f1d1d; /* Fallback Red */
+  --bg-primary: #0f172a;
+  --bg-secondary: #7f1d1d;
+  /* Fallback Red */
   --bg-accent: #334155;
-  
-  --primary-color: #3b82f6; 
-  --primary-dark: #2563eb; 
+
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
   --secondary-color: #64748b;
-  
+
   /* Brand Colors */
   --brand-red: #e63946;
   --brand-red-dark: #991b1b;
-  
+
   /* Sidebar Specifics */
   --sidebar-bg: linear-gradient(195deg, #b91c1c 0%, #7f1d1d 100%);
   --sidebar-text: #fef2f2;
   --sidebar-text-muted: #fecaca;
-  --sidebar-border: rgba(255,255,255,0.1);
-  
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
@@ -27,37 +28,37 @@
   --glass-bg: rgba(30, 41, 59, 0.7);
   --glass-border: 1px solid rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
+
   --font-sans: 'Poppins', system-ui, -apple-system, sans-serif;
-  
+
   --sidebar-width: 280px;
 
   --bg-gradient: radial-gradient(circle at 10% 20%, rgba(230, 57, 70, 0.08) 0%, transparent 20%),
-                 radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
 }
 
 /* Light Mode Overrides */
 :root.light-mode {
-  --bg-primary: #f8fafc;  
-  --bg-secondary: #ffffff; 
-  --bg-accent: #e2e8f0;    
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-accent: #e2e8f0;
 
-  --text-primary: #0f172a; 
-  --text-secondary: #64748b; 
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
   --text-muted: #94a3b8;
 
   /* Keep Sidebar Red for Brand Identity, but maybe slightly brighter or same */
   --sidebar-bg: linear-gradient(195deg, #dc2626 0%, #991b1b 100%);
   --sidebar-text: #ffffff;
   --sidebar-text-muted: #fecaca;
-  --sidebar-border: rgba(255,255,255,0.15);
+  --sidebar-border: rgba(255, 255, 255, 0.15);
 
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: 1px solid rgba(226, 232, 240, 0.6);
   --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 
   --bg-gradient: radial-gradient(circle at 10% 20%, rgba(230, 57, 70, 0.05) 0%, transparent 20%),
-                 radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
 }
 
 body {
@@ -66,14 +67,14 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  
+
   /* Background Image Implementation */
   background-image: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95)), url('/src/assets/bg_main.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
-  
+
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -161,7 +162,7 @@ body {
   font-family: inherit;
   font-size: 0.95rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .input-field:hover {
@@ -181,7 +182,7 @@ body {
 /* --- Table Styles --- */
 .data-table {
   width: 100%;
-  border-collapse: separate; 
+  border-collapse: separate;
   border-spacing: 0;
   font-size: 0.95rem;
 }
@@ -192,7 +193,8 @@ body {
   color: var(--text-secondary);
   font-weight: 600;
   background: rgba(255, 255, 255, 0.03);
-  border-bottom: 2px solid var(--brand-red); /* Red Accented Header */
+  border-bottom: 2px solid var(--brand-red);
+  /* Red Accented Header */
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -209,7 +211,8 @@ body {
 }
 
 .data-table tr:hover td {
-  background: rgba(230, 57, 70, 0.05); /* Slight Red Tint on Hover */
+  background: rgba(230, 57, 70, 0.05);
+  /* Slight Red Tint on Hover */
 }
 
 /* --- Layout --- */
@@ -229,7 +232,7 @@ body {
   position: sticky;
   top: 0;
   height: 100vh;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   z-index: 100;
 }
@@ -264,9 +267,10 @@ body {
 .nav-item.active {
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  border-left: none; /* Removed border, using pill shape */
+  border-left: none;
+  /* Removed border, using pill shape */
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .grid-cards {
@@ -276,41 +280,59 @@ body {
 }
 
 .label {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
 }
 
 .category-tag {
-    font-size: 0.65rem;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .attachment-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 0.75rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    transition: color 0.2s ease;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.2s ease;
 }
 
-.attachment-link:hover {
-    color: var(--brand-red);
-    text-decoration: underline;
+.input-field[type="file"] {
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: normal;
+}
+
+.input-field[type="file"]::file-selector-button {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-right: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.input-field[type="file"]:hover::file-selector-button {
+  background: var(--brand-red);
+  color: white;
 }
 
 /* --- Print Styles --- */
 @media print {
+
   /* Reset Backgrounds */
   body {
     background: white !important;
@@ -320,7 +342,14 @@ body {
   }
 
   /* Hide UI Elements */
-  .sidebar, .btn-primary, .btn-ghost, .no-print, header, button, .modal, .modal-backdrop {
+  .sidebar,
+  .btn-primary,
+  .btn-ghost,
+  .no-print,
+  header,
+  button,
+  .modal,
+  .modal-backdrop {
     display: none !important;
   }
 
@@ -351,21 +380,23 @@ body {
     border-radius: 0 !important;
     backdrop-filter: none !important;
   }
-  
+
   .data-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 11px; /* Smaller font for A4 density */
+    font-size: 11px;
+    /* Smaller font for A4 density */
     color: black !important;
   }
-  
-  .data-table th, .data-table td {
+
+  .data-table th,
+  .data-table td {
     padding: 6px 8px;
     border: 1px solid #ddd;
     color: black !important;
     text-align: left;
   }
-  
+
   .data-table th {
     background-color: #f0f0f0 !important;
     font-weight: bold;
@@ -373,10 +404,11 @@ body {
   }
 
   /* Remove Actions Column */
-  .data-table th:last-child, .data-table td:last-child {
+  .data-table th:last-child,
+  .data-table td:last-child {
     display: none !important;
   }
-  
+
   /* Ensure Colors are printed for Debut/Credit but readable */
   .data-table td {
     -webkit-print-color-adjust: exact;

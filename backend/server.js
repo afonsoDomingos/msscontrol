@@ -7,10 +7,31 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Caixa, Banco, Cliente, Fornecedor, User, AuditLog } = require('./models');
 const authMiddleware = require('./middleware/auth');
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'mss_control_attachments',
+    allowed_formats: ['jpg', 'png', 'pdf'],
+    resource_type: 'auto'
+  }
+});
+
+const upload = multer({ storage: storage });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mss_secret_key_123';
 
@@ -477,6 +498,18 @@ app.get('/api/audit-logs', authMiddleware, async (req, res) => {
 
     const total = await AuditLog.countDocuments();
     res.json({ logs, total, pages: Math.ceil(total / limit) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 9. Upload Route
+app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
+    }
+    res.json({ url: req.file.path });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

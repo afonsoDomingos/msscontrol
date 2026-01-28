@@ -18,6 +18,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [formData, setFormData] = useState({
     n_ordem: '',
@@ -82,6 +83,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
       });
     }
     setIsModalOpen(true);
+    setSelectedFile(null);
   };
 
   const handleDelete = async (id) => {
@@ -114,7 +116,17 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
       const dateParts = formData.data.split('-');
       const ano = parseInt(dateParts[0]);
       const mes = parseInt(dateParts[1]);
-      const payload = { ...formData, entrada, saida, mes, ano };
+      let finalAnexo = formData.anexo;
+
+      // Check if there is a file to upload
+      if (selectedFile) {
+        const filePayload = new FormData();
+        filePayload.append('file', selectedFile);
+        const uploadRes = await api.upload('/upload', filePayload);
+        finalAnexo = uploadRes.url;
+      }
+
+      const payload = { ...formData, entrada, saida, mes, ano, anexo: finalAnexo };
 
       if (editingItem) {
         await api.put(`${endpoint}/${editingItem._id}`, payload);
@@ -303,8 +315,15 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
             <input type="date" value={formData.vencimento} onChange={e => setFormData({ ...formData, vencimento: e.target.value })} className="input-field" />
           </div>
           <div>
-            <label className="label">Link do Anexo / PDF</label>
-            <input type="text" value={formData.anexo} onChange={e => setFormData({ ...formData, anexo: e.target.value })} className="input-field" placeholder="http://..." />
+            <label className="label">Anexo (Upload Direto)</label>
+            <input
+              type="file"
+              onChange={e => setSelectedFile(e.target.files[0])}
+              className="input-field"
+              style={{ padding: '0.4rem' }}
+              accept=".jpg,.png,.pdf"
+            />
+            {formData.anexo && !selectedFile && <p style={{ fontSize: '0.7rem', color: '#10b981', marginTop: '0.2rem' }}>✓ Já possui anexo</p>}
           </div>
           <div style={{ gridColumn: 'span 2' }}>
             <label className="label">Observações</label>

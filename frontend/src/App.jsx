@@ -7,6 +7,7 @@ import Bancos from './pages/Bancos';
 import Clientes from './pages/Clientes';
 import Fornecedores from './pages/Fornecedores';
 import Login from './pages/Login';
+import AuditLogs from './pages/AuditLogs';
 import { ThemeProvider } from './context/ThemeContext';
 
 const PrivateRoute = () => {
@@ -20,7 +21,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
@@ -28,6 +29,7 @@ function App() {
               <Route path="bancos" element={<Bancos />} />
               <Route path="clientes" element={<Clientes />} />
               <Route path="fornecedores" element={<Fornecedores />} />
+              <Route path="auditoria" element={<AuditLogs />} />
             </Route>
           </Route>
 

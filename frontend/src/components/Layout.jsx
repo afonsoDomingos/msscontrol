@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Building2, Users, LogOut, Sun, Moon, Truck } from 'lucide-react';
+import { LayoutDashboard, Wallet, Building2, Users, LogOut, Sun, Moon, Truck, ShieldAlert } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -43,6 +43,7 @@ const Layout = () => {
       case '/bancos': return 'Contas Bancárias';
       case '/clientes': return 'Gestão de Clientes';
       case '/fornecedores': return 'Gestão de Fornecedores';
+      case '/auditoria': return 'Trilha de Auditoria';
       default: return 'Mapa de Controle';
     }
   };
@@ -75,6 +76,7 @@ const Layout = () => {
           <SidebarItem to="/bancos" icon={Building2} label="Contas Bancárias" />
           <SidebarItem to="/clientes" icon={Users} label="Gestão de Clientes" />
           <SidebarItem to="/fornecedores" icon={Truck} label="Fornecedores" />
+          <SidebarItem to="/auditoria" icon={ShieldAlert} label="Segurança / Logs" />
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>

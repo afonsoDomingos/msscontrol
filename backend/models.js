@@ -9,6 +9,9 @@ const LedgerSchema = {
   entrada: { type: Number, default: 0 },
   saida: { type: Number, default: 0 },
   saldo: { type: Number, default: 0 },
+  categoria: { type: String, default: 'Outros' }, // For BI Dashboard
+  vencimento: { type: String, default: '' },      // For alerts
+  anexo: { type: String, default: '' },          // URL or path
   observacao: { type: String, default: '' },
 };
 
@@ -55,6 +58,15 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, default: 'Admin' }
 });
 
+const AuditLogSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userName: String,
+  action: String, // 'CREATE', 'UPDATE', 'DELETE'
+  resource: String, // 'Caixa', 'Banco', etc.
+  details: Object,
+  timestamp: { type: Date, default: Date.now }
+}, { timestamps: true });
+
 module.exports = {
   Caixa: mongoose.model('Caixa', CaixaSchema),
   Banco: mongoose.model('Banco', BancoSchema),
@@ -62,5 +74,6 @@ module.exports = {
   ClientTransaction: mongoose.model('ClientTransaction', ClientTransactionSchema),
   Fornecedor: mongoose.model('Fornecedor', FornecedorSchema),
   SupplierTransaction: mongoose.model('SupplierTransaction', SupplierTransactionSchema),
-  User: mongoose.model('User', UserSchema)
+  User: mongoose.model('User', UserSchema),
+  AuditLog: mongoose.model('AuditLog', AuditLogSchema)
 };

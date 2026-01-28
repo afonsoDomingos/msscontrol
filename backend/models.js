@@ -12,6 +12,7 @@ const LedgerSchema = {
   categoria: { type: String, default: 'Outros' }, // For BI Dashboard
   vencimento: { type: String, default: '' },      // For alerts
   anexo: { type: String, default: '' },          // URL or path
+  status: { type: String, enum: ['Pendente', 'Pago'], default: 'Pago' }, // For liquidation flow
   observacao: { type: String, default: '' },
 };
 

@@ -515,6 +515,80 @@ app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
   }
 });
 
+// 10. Liquidation Motor (Automatic Flow)
+app.post('/api/liquidate/:type/:id', authMiddleware, async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { paymentSource, targetId } = req.body; // paymentSource: 'Caixa' or 'Banco'
+
+    let originalTx;
+    let Model;
+    let targetModel;
+    let entityField;
+    let entityId;
+
+    if (type === 'clientes') {
+      Model = mongoose.model('ClientTransaction');
+      entityField = 'clienteId';
+    } else if (type === 'fornecedores') {
+      Model = mongoose.model('SupplierTransaction');
+      entityField = 'fornecedorId';
+    } else {
+      return res.status(400).json({ error: 'Tipo inválido' });
+    }
+
+    originalTx = await Model.findById(id);
+    if (!originalTx) return res.status(404).json({ error: 'Transação não encontrada' });
+    if (originalTx.status === 'Pago') return res.status(400).json({ error: 'Transação já liquidada' });
+
+    entityId = originalTx[entityField];
+    const value = originalTx.entrada || originalTx.saida || 0;
+
+    // 1. Mark original as Pago
+    originalTx.status = 'Pago';
+    await originalTx.save();
+
+    // 2. Create the movement in the designated source (Caixa or Banco)
+    const SourceModel = paymentSource === 'Caixa' ? Caixa : Banco;
+    const movementDesc = `LIQUIDAÇÃO: ${originalTx.descricao} (${type === 'clientes' ? 'CLIENTE' : 'FORNECEDOR'})`;
+
+    const sourceMovement = new SourceModel({
+      data: new Date().toISOString().split('T')[0],
+      descricao: movementDesc,
+      documento: originalTx.documento,
+      entidade: originalTx.entidade,
+      // Se era dívida de cliente (saida no ledger), entra no caixa (entrada)
+      entrada: type === 'clientes' ? (originalTx.saida || originalTx.entrada) : 0,
+      // Se era dívida nossa com fornecedor (entrada no ledger), sai do caixa (saida)
+      saida: type === 'fornecedores' ? (originalTx.entrada || originalTx.saida) : 0,
+      categoria: originalTx.categoria,
+      observacao: `Automático via motor de liquidação. Ref original: ${id}`
+    });
+    await sourceMovement.save();
+    await recalculateBalances(SourceModel);
+
+    // 3. Create the balancing entry in the original ledger (to zero the specific debt balance)
+    const balancingTx = new Model({
+      ...originalTx.toObject(),
+      _id: undefined,
+      descricao: `[PAGAMENTO] ${originalTx.descricao}`,
+      // Inverte: se era entrada, vira saida; se era saida, vira entrada
+      entrada: originalTx.saida || 0,
+      saida: originalTx.entrada || 0,
+      status: 'Pago',
+      observacao: `Compensação automática de liquidação via ${paymentSource}`
+    });
+    await balancingTx.save();
+    await recalculateBalances(Model, { [entityField]: entityId });
+
+    await logAction(req, 'UPDATE', 'Liquidation', { originalId: id, paymentSource, value });
+
+    res.json({ message: 'Liquidação efetuada com sucesso', sourceMovement });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 console.log(`Starting server... Attempting to run on PORT: ${PORT}`);
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit, Printer, FileText, Download, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Plus, Trash2, Edit, Printer, FileText, Download, ChevronLeft, ChevronRight, Calendar, CheckCircle2 } from 'lucide-react';
 import Modal from './Modal';
 import { api } from '../data/api';
 import logo from '../assets/logo.png';
@@ -19,6 +19,9 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isLiquidating, setIsLiquidating] = useState(false);
+  const [liquidateItem, setLiquidateItem] = useState(null);
+  const [liqSource, setLiqSource] = useState('Caixa');
 
   const [formData, setFormData] = useState({
     n_ordem: '',
@@ -31,6 +34,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
     categoria: 'Outros',
     vencimento: '',
     anexo: '',
+    status: 'Pago',
     observacao: ''
   });
 
@@ -79,6 +83,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
         categoria: 'Outros',
         vencimento: '',
         anexo: '',
+        status: endpoint.includes('clientes') || endpoint.includes('fornecedores') ? 'Pendente' : 'Pago',
         observacao: ''
       });
     }
@@ -161,6 +166,20 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
     document.body.removeChild(link);
   };
 
+  const handleLiquidate = async () => {
+    if (!liquidateItem) return;
+    try {
+      const type = endpoint.includes('clientes') ? 'clientes' : 'fornecedores';
+      await api.post(`/liquidate/${type}/${liquidateItem._id}`, { paymentSource: liqSource });
+      setIsLiquidating(false);
+      fetchData();
+    } catch (error) {
+      alert('Erro ao liquidar: ' + error.message);
+    }
+  };
+
+  const isEntityLedger = endpoint.includes('clientes') || endpoint.includes('fornecedores');
+
   const formatCurrency = (val) => {
     if (val === undefined || val === null) return '-';
     return new Intl.NumberFormat('pt-MZ', { minimumFractionDigits: 2 }).format(val);
@@ -230,6 +249,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
                 <th style={{ textAlign: 'right' }}>Débito</th>
                 <th style={{ textAlign: 'right' }}>Crédito</th>
                 <th style={{ textAlign: 'right' }}>Saldo</th>
+                {isEntityLedger && <th>Status</th>}
                 <th>Venc. / Anexo</th>
                 <th style={{ textAlign: 'center' }}>Ações</th>
               </tr>
@@ -248,12 +268,37 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
                   <td style={{ textAlign: 'right', color: '#10b981', fontWeight: row.entrada > 0 ? 600 : 400 }}>{row.entrada > 0 ? formatCurrency(row.entrada) : '-'}</td>
                   <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: row.saida > 0 ? 600 : 400 }}>{row.saida > 0 ? formatCurrency(row.saida) : '-'}</td>
                   <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(row.saldo)}</td>
+                  {isEntityLedger && (
+                    <td>
+                      <span style={{
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '12px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        background: row.status === 'Pago' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                        color: row.status === 'Pago' ? '#10b981' : '#ef4444',
+                        border: `1px solid ${row.status === 'Pago' ? '#10b98140' : '#ef444440'}`
+                      }}>
+                        {row.status}
+                      </span>
+                    </td>
+                  )}
                   <td>
                     {row.vencimento && <div style={{ fontSize: '0.75rem', marginBottom: '0.2rem', color: new Date(row.vencimento) < new Date() ? '#ef4444' : 'inherit' }}>📅 {row.vencimento}</div>}
                     {row.anexo && <a href={row.anexo} target="_blank" rel="noreferrer" className="attachment-link">🔗 Ver Documento</a>}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
+                      {isEntityLedger && row.status === 'Pendente' && (
+                        <button
+                          onClick={() => { setLiquidateItem(row); setIsLiquidating(true); }}
+                          className="btn-primary"
+                          style={{ padding: '0.3rem', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 2px 8px rgba(16,185,129,0.3)' }}
+                          title="Liquidar via Caixa/Banco"
+                        >
+                          <CheckCircle2 size={14} />
+                        </button>
+                      )}
                       <button onClick={() => handleOpenModal(row)} className="btn-ghost" style={{ padding: '0.3rem' }}><Edit size={14} /></button>
                       <button onClick={() => handleDelete(row._id)} className="btn-ghost" style={{ padding: '0.3rem', color: '#ef4444' }}><Trash2 size={14} /></button>
                     </div>
@@ -314,6 +359,15 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
             <label className="label">Vencimento (Se houver)</label>
             <input type="date" value={formData.vencimento} onChange={e => setFormData({ ...formData, vencimento: e.target.value })} className="input-field" />
           </div>
+          {isEntityLedger && (
+            <div>
+              <label className="label">Status Inicial</label>
+              <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="input-field">
+                <option value="Pendente">Pendente (Dívida)</option>
+                <option value="Pago">Pago (À Vista)</option>
+              </select>
+            </div>
+          )}
           <div>
             <label className="label">Anexo (Upload Direto)</label>
             <input
@@ -333,6 +387,47 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
             {isSubmitting ? "Processando..." : (editingItem ? "Atualizar Registro" : "Confirmar Lançamento")}
           </button>
         </form>
+      </Modal>
+
+      {/* Modal de Liquidação */}
+      <Modal
+        isOpen={isLiquidating}
+        onClose={() => setIsLiquidating(false)}
+        title="Liquidar Transação"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Você está liquidando:</p>
+            <p style={{ fontWeight: 600, fontSize: '1.1rem', marginTop: '0.2rem' }}>{liquidateItem?.descricao}</p>
+            <p style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--brand-red)', marginTop: '0.5rem' }}>
+              {formatCurrency(liquidateItem?.entrada || liquidateItem?.saida)} MT
+            </p>
+          </div>
+
+          <div>
+            <label className="label">Fonte do Pagamento / Recebimento</label>
+            <select
+              value={liqSource}
+              onChange={e => setLiqSource(e.target.value)}
+              className="input-field"
+              style={{ fontSize: '1rem', padding: '0.8rem' }}
+            >
+              <option value="Caixa">Fluxo de Caixa (Físico)</option>
+              <option value="Banco">Contas Bancárias (Digital)</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setIsLiquidating(false)}>Cancelar</button>
+            <button className="btn-primary" style={{ flex: 2, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }} onClick={handleLiquidate}>
+              Confirmar Liquidação
+            </button>
+          </div>
+
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+            * Isso criará automaticamente um lançamento correspondente no {liqSource} e compensará o saldo no ledger atual.
+          </p>
+        </div>
       </Modal>
     </div>
   );

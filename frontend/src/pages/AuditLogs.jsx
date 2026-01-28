@@ -6,20 +6,24 @@ import { api } from '../data/api';
 const AuditLogs = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({ page: 1, pages: 1 });
+
+    const fetchLogs = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get(`/audit-logs?page=${pagination.page}&limit=50`);
+            setLogs(response.logs || []);
+            setPagination(prev => ({ ...prev, pages: response.pages || 1 }));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchLogs = async () => {
-            try {
-                const data = await api.get('/audit-logs');
-                setLogs(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchLogs();
-    }, []);
+    }, [pagination.page]);
 
     const getActionColor = (action) => {
         switch (action) {
@@ -96,6 +100,28 @@ const AuditLogs = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {pagination.pages > 1 && (
+                    <div style={{ padding: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem', alignItems: 'center', borderTop: '1px solid var(--glass-border)' }}>
+                        <button
+                            className="btn-ghost"
+                            disabled={pagination.page === 1}
+                            onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+                            style={{ padding: '0.4rem 1rem' }}
+                        >
+                            Anterior
+                        </button>
+                        <span style={{ fontSize: '0.9rem' }}>Página {pagination.page} de {pagination.pages}</span>
+                        <button
+                            className="btn-ghost"
+                            disabled={pagination.page === pagination.pages}
+                            onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+                            style={{ padding: '0.4rem 1rem' }}
+                        >
+                            Próxima
+                        </button>
+                    </div>
+                )}
             </motion.div>
 
             <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>

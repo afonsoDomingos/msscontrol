@@ -229,7 +229,7 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
                   <td style={{ fontSize: '0.85rem' }}>{row.data}</td>
                   <td>
                     <div style={{ fontWeight: 500 }}>{row.descricao}</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{row.categoria}</div>
+                    <div className="category-tag" style={{ color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.03)', display: 'inline-block', marginTop: '0.2rem' }}>{row.categoria}</div>
                   </td>
                   <td style={{ fontSize: '0.8rem' }}>{row.documento}</td>
                   <td>{row.entidade}</td>
@@ -237,8 +237,8 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
                   <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: row.saida > 0 ? 600 : 400 }}>{row.saida > 0 ? formatCurrency(row.saida) : '-'}</td>
                   <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(row.saldo)}</td>
                   <td>
-                    {row.vencimento && <div style={{ fontSize: '0.75rem', color: new Date(row.vencimento) < new Date() ? '#ef4444' : 'inherit' }}>📅 {row.vencimento}</div>}
-                    {row.anexo && <a href={row.anexo} target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: 'var(--primary-color)' }}>🔗 Ver Documento</a>}
+                    {row.vencimento && <div style={{ fontSize: '0.75rem', marginBottom: '0.2rem', color: new Date(row.vencimento) < new Date() ? '#ef4444' : 'inherit' }}>📅 {row.vencimento}</div>}
+                    {row.anexo && <a href={row.anexo} target="_blank" rel="noreferrer" className="attachment-link">🔗 Ver Documento</a>}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>

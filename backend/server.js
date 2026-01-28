@@ -207,8 +207,17 @@ app.delete('/api/caixa/:id', authMiddleware, async (req, res) => {
 // 3. Bancos CRUD
 app.get('/api/bancos', authMiddleware, async (req, res) => {
   try {
-    const items = await Banco.find().sort({ data: 1, createdAt: 1 });
-    res.json(items);
+    const { page = 1, limit = 50, startDate, endDate } = req.query;
+    const filter = {};
+    if (startDate && endDate) filter.data = { $gte: startDate, $lte: endDate };
+
+    const items = await Banco.find(filter)
+      .sort({ data: 1, createdAt: 1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await Banco.countDocuments(filter);
+    res.json({ transactions: items, total, pages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -219,6 +228,7 @@ app.post('/api/bancos', authMiddleware, async (req, res) => {
     const newItem = new Banco(req.body);
     await newItem.save();
     await recalculateBalances(Banco);
+    await logAction(req, 'CREATE', 'Banco', newItem);
     res.json(newItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -229,6 +239,7 @@ app.put('/api/bancos/:id', authMiddleware, async (req, res) => {
   try {
     const updatedItem = await Banco.findByIdAndUpdate(req.params.id, req.body, { new: true });
     await recalculateBalances(Banco);
+    await logAction(req, 'UPDATE', 'Banco', updatedItem);
     res.json(updatedItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -237,8 +248,10 @@ app.put('/api/bancos/:id', authMiddleware, async (req, res) => {
 
 app.delete('/api/bancos/:id', authMiddleware, async (req, res) => {
   try {
+    const oldItem = await Banco.findById(req.params.id);
     await Banco.findByIdAndDelete(req.params.id);
     await recalculateBalances(Banco);
+    await logAction(req, 'DELETE', 'Banco', oldItem);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -276,8 +289,9 @@ app.put('/api/clientes/:id', authMiddleware, async (req, res) => {
 
 app.delete('/api/clientes/:id', authMiddleware, async (req, res) => {
   try {
-    // Ideally delete transactions too
+    const oldItem = await Cliente.findById(req.params.id);
     await Cliente.findByIdAndDelete(req.params.id);
+    await logAction(req, 'DELETE', 'Cliente', oldItem);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -288,8 +302,18 @@ app.delete('/api/clientes/:id', authMiddleware, async (req, res) => {
 app.get('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const items = await mongoose.model('ClientTransaction').find({ clienteId: id }).sort({ data: 1, createdAt: 1 });
-    res.json(items);
+    const { page = 1, limit = 50, startDate, endDate } = req.query;
+    const ClientTransaction = mongoose.model('ClientTransaction');
+    const filter = { clienteId: id };
+    if (startDate && endDate) filter.data = { $gte: startDate, $lte: endDate };
+
+    const items = await ClientTransaction.find(filter)
+      .sort({ data: 1, createdAt: 1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await ClientTransaction.countDocuments(filter);
+    res.json({ transactions: items, total, pages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -305,6 +329,7 @@ app.post('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
     });
     await newItem.save();
     await recalculateBalances(ClientTransaction, { clienteId: id });
+    await logAction(req, 'CREATE', 'ClientTransaction', newItem);
     res.json(newItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -317,6 +342,7 @@ app.put('/api/clientes/:clientId/transactions/:id', authMiddleware, async (req, 
     const ClientTransaction = mongoose.model('ClientTransaction');
     const updated = await ClientTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
     await recalculateBalances(ClientTransaction, { clienteId: req.params.clientId });
+    await logAction(req, 'UPDATE', 'ClientTransaction', updated);
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -326,8 +352,10 @@ app.put('/api/clientes/:clientId/transactions/:id', authMiddleware, async (req, 
 app.delete('/api/clientes/:clientId/transactions/:id', authMiddleware, async (req, res) => {
   try {
     const ClientTransaction = mongoose.model('ClientTransaction');
+    const oldItem = await ClientTransaction.findById(req.params.id);
     await ClientTransaction.findByIdAndDelete(req.params.id);
     await recalculateBalances(ClientTransaction, { clienteId: req.params.clientId });
+    await logAction(req, 'DELETE', 'ClientTransaction', oldItem);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -365,7 +393,9 @@ app.put('/api/fornecedores/:id', authMiddleware, async (req, res) => {
 
 app.delete('/api/fornecedores/:id', authMiddleware, async (req, res) => {
   try {
+    const oldItem = await Fornecedor.findById(req.params.id);
     await Fornecedor.findByIdAndDelete(req.params.id);
+    await logAction(req, 'DELETE', 'Fornecedor', oldItem);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -376,8 +406,18 @@ app.delete('/api/fornecedores/:id', authMiddleware, async (req, res) => {
 app.get('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const items = await mongoose.model('SupplierTransaction').find({ fornecedorId: id }).sort({ data: 1, createdAt: 1 });
-    res.json(items);
+    const { page = 1, limit = 50, startDate, endDate } = req.query;
+    const SupplierTransaction = mongoose.model('SupplierTransaction');
+    const filter = { fornecedorId: id };
+    if (startDate && endDate) filter.data = { $gte: startDate, $lte: endDate };
+
+    const items = await SupplierTransaction.find(filter)
+      .sort({ data: 1, createdAt: 1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await SupplierTransaction.countDocuments(filter);
+    res.json({ transactions: items, total, pages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -393,6 +433,7 @@ app.post('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) 
     });
     await newItem.save();
     await recalculateBalances(SupplierTransaction, { fornecedorId: id });
+    await logAction(req, 'CREATE', 'SupplierTransaction', newItem);
     res.json(newItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -405,6 +446,7 @@ app.put('/api/fornecedores/:fornecedorId/transactions/:id', authMiddleware, asyn
     const SupplierTransaction = mongoose.model('SupplierTransaction');
     const updated = await SupplierTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
     await recalculateBalances(SupplierTransaction, { fornecedorId: req.params.fornecedorId });
+    await logAction(req, 'UPDATE', 'SupplierTransaction', updated);
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -414,19 +456,27 @@ app.put('/api/fornecedores/:fornecedorId/transactions/:id', authMiddleware, asyn
 app.delete('/api/fornecedores/:fornecedorId/transactions/:id', authMiddleware, async (req, res) => {
   try {
     const SupplierTransaction = mongoose.model('SupplierTransaction');
+    const oldItem = await SupplierTransaction.findById(req.params.id);
     await SupplierTransaction.findByIdAndDelete(req.params.id);
     await recalculateBalances(SupplierTransaction, { fornecedorId: req.params.fornecedorId });
+    await logAction(req, 'DELETE', 'SupplierTransaction', oldItem);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 8. Audit Logs Route
+// 8. Audit Logs Route (With Pagination)
 app.get('/api/audit-logs', authMiddleware, async (req, res) => {
   try {
-    const logs = await AuditLog.find().sort({ timestamp: -1 }).limit(100);
-    res.json(logs);
+    const { page = 1, limit = 50 } = req.query;
+    const logs = await AuditLog.find()
+      .sort({ timestamp: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const total = await AuditLog.countDocuments();
+    res.json({ logs, total, pages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

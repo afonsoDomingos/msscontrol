@@ -276,11 +276,37 @@ body {
 }
 
 .label {
+    display: block;
     font-size: 0.8rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.category-tag {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.attachment-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.attachment-link:hover {
+    color: var(--brand-red);
+    text-decoration: underline;
 }
 
 /* --- Print Styles --- */

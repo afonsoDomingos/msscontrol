@@ -94,7 +94,21 @@ const Layout = () => {
 
           <div style={{ marginTop: '1.5rem', padding: '0.75rem', textAlign: 'center' }}>
             <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Desenvolvido por</p>
-            <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ffffff', marginTop: '0.2rem' }}>Vibe</p>
+            <a
+              href="https://www.linkedin.com/in/afonso-domingos-6b59361a5/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: '#ffffff',
+                marginTop: '0.2rem',
+                textDecoration: 'none',
+                display: 'block'
+              }}
+            >
+              Vibe
+            </a>
           </div>
         </div>
       </aside>

@@ -112,7 +112,7 @@ const recalculateBalances = async (Model, filter = {}) => {
 // 2. Caixa CRUD
 app.get('/api/caixa', authMiddleware, async (req, res) => {
   try {
-    const transactions = await Caixa.find().sort({ data: -1, createdAt: -1 });
+    const transactions = await Caixa.find().sort({ data: 1, createdAt: 1 });
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -153,7 +153,7 @@ app.delete('/api/caixa/:id', authMiddleware, async (req, res) => {
 // 3. Bancos CRUD
 app.get('/api/bancos', authMiddleware, async (req, res) => {
   try {
-    const items = await Banco.find().sort({ data: -1, createdAt: -1 });
+    const items = await Banco.find().sort({ data: 1, createdAt: 1 });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -234,7 +234,7 @@ app.delete('/api/clientes/:id', authMiddleware, async (req, res) => {
 app.get('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const items = await mongoose.model('ClientTransaction').find({ clienteId: id }).sort({ data: -1, createdAt: -1 });
+    const items = await mongoose.model('ClientTransaction').find({ clienteId: id }).sort({ data: 1, createdAt: 1 });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -322,7 +322,7 @@ app.delete('/api/fornecedores/:id', authMiddleware, async (req, res) => {
 app.get('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const items = await mongoose.model('SupplierTransaction').find({ fornecedorId: id }).sort({ data: -1, createdAt: -1 });
+    const items = await mongoose.model('SupplierTransaction').find({ fornecedorId: id }).sort({ data: 1, createdAt: 1 });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });

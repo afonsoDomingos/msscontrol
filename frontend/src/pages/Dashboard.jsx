@@ -6,21 +6,21 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { api } from '../data/api';
 
 const StatCard = ({ title, value, icon: Icon, trend, color, subValue, helpText }) => (
-  <motion.div 
+  <motion.div
     className="glass-panel"
     whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
-    style={{ 
-        padding: '1.5rem', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '0.5rem',
-        position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.05)'
+    style={{
+      padding: '1.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.5rem',
+      position: 'relative',
+      overflow: 'hidden',
+      border: '1px solid rgba(255,255,255,0.05)'
     }}
   >
     <div style={{ position: 'absolute', top: 0, right: 0, padding: '1.5rem', opacity: 0.1 }}>
-        <Icon size={48} color={color} />
+      <Icon size={48} color={color} />
     </div>
 
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', zIndex: 1 }}>
@@ -34,19 +34,19 @@ const StatCard = ({ title, value, icon: Icon, trend, color, subValue, helpText }
         </span>
       )}
     </div>
-    
+
     <div style={{ zIndex: 1, marginTop: '1rem' }}>
       <h3 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</h3>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-          <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem', letterSpacing: '-0.02em' }}>
-            {new Intl.NumberFormat('pt-MZ', { minimumFractionDigits: 2 }).format(value)}
-          </p>
-          <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 500 }}>MT</span>
+        <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem', letterSpacing: '-0.02em' }}>
+          {new Intl.NumberFormat('pt-MZ', { minimumFractionDigits: 2 }).format(value)}
+        </p>
+        <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 500 }}>MT</span>
       </div>
       {subValue && (
-          <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.8rem', color: subValue.includes('Dívida') ? '#ef4444' : '#10b981' }}>
-              {subValue}
-          </div>
+        <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.8rem', color: subValue.includes('Dívida') ? '#ef4444' : '#10b981' }}>
+          {subValue}
+        </div>
       )}
     </div>
   </motion.div>
@@ -54,9 +54,10 @@ const StatCard = ({ title, value, icon: Icon, trend, color, subValue, helpText }
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
-    totalCaixa: 0, 
-    totalBancos: 0, 
-    totalDividas: 0, // General Client Net Balance
+    totalCaixa: 0,
+    totalBancos: 0,
+    totalDividas: 0, // General Client Net Balance (Receivable)
+    totalFornecedores: 0, // Payable
     totalEntradas: 0,
     totalSaidas: 0,
     monthlyStats: []
@@ -64,24 +65,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-        try {
-            const data = await api.get('/stats');
-            setStats(data);
-        } catch(err) {
-            console.error(err);
-        }
+      try {
+        const data = await api.get('/stats');
+        setStats(data);
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchStats();
   }, []);
 
-  const totalAssets = stats.totalCaixa + stats.totalBancos;
-  // Interpretation: "totalDividas" is positive if Admin owes clients? Or Clients owe Admin?
-  // Let's assume standard: Positive = Credit (Admin has money). Negative = Debt.
-  
+  // Net Equity = (Caixa + Bancos + Receivable from Clients) - Payable to Suppliers
+  const totalAssets = stats.totalCaixa + stats.totalBancos + stats.totalDividas - stats.totalFornecedores;
+
   const chartData = stats.monthlyStats.map(item => ({
-      name: new Date(0, item._id - 1).toLocaleString('pt-PT', { month: 'short' }),
-      Entradas: item.entrada,
-      Saídas: item.saida
+    name: new Date(0, item._id - 1).toLocaleString('pt-PT', { month: 'short' }),
+    Entradas: item.entrada,
+    Saídas: item.saida
   }));
 
   return (
@@ -94,57 +94,61 @@ const Dashboard = () => {
       <div className="grid-cards" style={{ marginBottom: '2rem' }}>
         <StatCard title="Saldo em Caixa" value={stats.totalCaixa} icon={DollarSign} color="#10b981" />
         <StatCard title="Saldo em Bancos" value={stats.totalBancos} icon={Wallet} color="#3b82f6" />
-        <StatCard title="Saldo Clientes (Líquido)" value={stats.totalDividas} icon={TrendingDown} color={stats.totalDividas >= 0 ? "#8b5cf6" : "#ef4444"} subValue={stats.totalDividas >= 0 ? "Em haver (Credito)" : "Dívida"} />
-        <StatCard title="Patrimônio Total" value={totalAssets} icon={TrendingUp} color="#f59e0b" />
+        <StatCard title="A Receber (Clientes)" value={stats.totalDividas} icon={TrendingDown} color="#8b5cf6" subValue="Saldo Líquido" />
+        <StatCard title="A Pagar (Fornecedores)" value={stats.totalFornecedores} icon={TrendingDown} color="#ef4444" subValue="Débito Pendente" />
       </div>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-          <motion.div className="glass-panel" style={{ padding: '1.5rem', minHeight: '400px' }}>
-              <h3 style={{ marginBottom: '1.5rem', fontWeight: 600 }}>Crescimento Financeiro (Entradas vs Saídas)</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={chartData}>
-                      <defs>
-                          <linearGradient id="colorEntrada" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                          </linearGradient>
-                          <linearGradient id="colorSaida" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                          </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" strike="rgba(255,255,255,0.1)" vertical={false} />
-                      <XAxis dataKey="name" stroke="var(--text-secondary)" tickLine={false} axisLine={false} />
-                      <YAxis stroke="var(--text-secondary)" tickLine={false} axisLine={false} tickFormatter={(value) => `${value/1000}k`} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '8px' }}
-                        itemStyle={{ color: '#fff' }}
-                      />
-                      <Area type="monotone" dataKey="Entradas" stroke="#10b981" fillOpacity={1} fill="url(#colorEntrada)" />
-                      <Area type="monotone" dataKey="Saídas" stroke="#ef4444" fillOpacity={1} fill="url(#colorSaida)" />
-                  </AreaChart>
-              </ResponsiveContainer>
-          </motion.div>
 
-          <motion.div className="glass-panel" style={{ padding: '1.5rem' }}>
-               <h3 style={{ marginBottom: '1.5rem', fontWeight: 600 }}>Totais do Ano</h3>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                   <div>
-                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Recebido (Entradas)</p>
-                       <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981' }}>{new Intl.NumberFormat('pt-MZ').format(stats.totalEntradas)} MT</p>
-                   </div>
-                    <div>
-                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Gasto (Saídas)</p>
-                       <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ef4444' }}>{new Intl.NumberFormat('pt-MZ').format(stats.totalSaidas)} MT</p>
-                   </div>
-                   <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Resultado Operacional</p>
-                        <p style={{ fontSize: '1.5rem', fontWeight: 700, color: (stats.totalEntradas - stats.totalSaidas) >= 0 ? '#f59e0b' : '#ef4444' }}>
-                            {new Intl.NumberFormat('pt-MZ').format(stats.totalEntradas - stats.totalSaidas)} MT
-                        </p>
-                   </div>
-               </div>
-          </motion.div>
+      <div style={{ marginBottom: '2rem' }}>
+        <StatCard title="Patrimônio Líquido Estimado" value={totalAssets} icon={TrendingUp} color="#f59e0b" helpText="Soma de Caixa, Bancos e Clientes, menos Fornecedores" />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+        <motion.div className="glass-panel" style={{ padding: '1.5rem', minHeight: '400px' }}>
+          <h3 style={{ marginBottom: '1.5rem', fontWeight: 600 }}>Crescimento Financeiro (Entradas vs Saídas)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorEntrada" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorSaida" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" strike="rgba(255,255,255,0.1)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--text-secondary)" tickLine={false} axisLine={false} />
+              <YAxis stroke="var(--text-secondary)" tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}k`} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '8px' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Area type="monotone" dataKey="Entradas" stroke="#10b981" fillOpacity={1} fill="url(#colorEntrada)" />
+              <Area type="monotone" dataKey="Saídas" stroke="#ef4444" fillOpacity={1} fill="url(#colorSaida)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ marginBottom: '1.5rem', fontWeight: 600 }}>Totais do Ano</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Recebido (Entradas)</p>
+              <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981' }}>{new Intl.NumberFormat('pt-MZ').format(stats.totalEntradas)} MT</p>
+            </div>
+            <div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Gasto (Saídas)</p>
+              <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ef4444' }}>{new Intl.NumberFormat('pt-MZ').format(stats.totalSaidas)} MT</p>
+            </div>
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Resultado Operacional</p>
+              <p style={{ fontSize: '1.5rem', fontWeight: 700, color: (stats.totalEntradas - stats.totalSaidas) >= 0 ? '#f59e0b' : '#ef4444' }}>
+                {new Intl.NumberFormat('pt-MZ').format(stats.totalEntradas - stats.totalSaidas)} MT
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -93,46 +93,26 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
 
     setIsSubmitting(true);
     try {
-      let saldoToSave = 0;
-      // Use custom parser instead of direct Number()
+      // Use custom parser instead of direct Number() for currency fields
       const entrada = parseCurrency(formData.entrada);
       const saida = parseCurrency(formData.saida);
 
-      // Ensure we are working with numbers for the previous balance
-      const lastBalance = data.length > 0 ? Number(data[0].saldo || 0) : 0;
+      // Derive Month/Year from the selected date string (YYYY-MM-DD or similar)
+      const dateParts = formData.data.split('-');
+      const ano = parseInt(dateParts[0]);
+      const mes = parseInt(dateParts[1]);
 
-      if (!editingItem) {
-        // NEW ENTRY
-        if (data.length > 0) {
-          saldoToSave = lastBalance + entrada - saida;
-        } else {
-          saldoToSave = entrada - saida;
-        }
-      } else {
-        // EDITING
-        const oldEntrada = Number(editingItem.entrada) || 0;
-        const oldSaida = Number(editingItem.saida) || 0;
-        const oldSaldo = Number(editingItem.saldo) || 0;
-
-        const balanceBeforeThisTx = oldSaldo - oldEntrada + oldSaida;
-        saldoToSave = balanceBeforeThisTx + entrada - saida;
-      }
-
-      // Derive Month/Year if needed
-      const dateDate = new Date(formData.data);
-      const mes = dateDate.getMonth() + 1;
-      const ano = dateDate.getFullYear();
-
-      // We still save entrada/saida as numbers in the DB
-      const payload = { ...formData, entrada, saida, saldo: saldoToSave, mes, ano };
+      // We send the core data. Backend will trigger 'recalculateBalances' to fix the saldo.
+      const payload = { ...formData, entrada, saida, mes, ano };
 
       if (editingItem) {
         await api.put(`${endpoint}/${editingItem._id}`, payload);
       } else {
         await api.post(endpoint, payload);
       }
+
       setIsModalOpen(false);
-      fetchData();
+      fetchData(); // This will refresh the list with the updated balances from backend
     } catch (error) {
       console.error(error);
       alert('Erro ao salvar');

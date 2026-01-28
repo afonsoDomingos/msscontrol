@@ -25,92 +25,89 @@ mongoose.connect(process.env.MONGO_URI)
 
 // 0. Auth Routes
 app.post('/api/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ error: 'Usuário não encontrado' });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ error: 'Usuário não encontrado' });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ error: 'Senha incorreta' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'Senha incorreta' });
 
-        const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '1d' });
 
-        res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // 1. Dashboard Stats (Protected)
 // 1. Dashboard Stats (Protected)
 app.get('/api/stats', authMiddleware, async (req, res) => {
   try {
-    const getLastSaldo = async (Model) => {
-        const lastEntry = await Model.findOne().sort({ createdAt: -1 });
-        return lastEntry ? lastEntry.saldo : 0;
-    };
-    
-    const getLastClientSaldo = async (clienteId) => {
-        const lastEntry = await mongoose.model('ClientTransaction')
-           .findOne({ clienteId })
-           .sort({ createdAt: -1 });  // Use createdAt to ensure sequence
-        return lastEntry ? lastEntry.saldo : 0;
+    // Aggregation for totals using $sum (much more reliable than getLastSaldo)
+    const getTotals = async (Model) => {
+      const stats = await Model.aggregate([
+        { $group: { _id: null, entrada: { $sum: "$entrada" }, saida: { $sum: "$saida" } } }
+      ]);
+      return stats[0] || { entrada: 0, saida: 0 };
     };
 
-    const totalCaixa = await getLastSaldo(Caixa);
-    const totalBancos = await getLastSaldo(Banco);
-    
-    // Aggregation for Clients
-    const clientes = await Cliente.find();
-    let totalDividas = 0; // "Dívidas" meaning Net Balance of all clients
-    let totalEntradasAll = 0;
-    let totalSaidasAll = 0;
+    const caixaTotals = await getTotals(Caixa);
+    const bancoTotals = await getTotals(Banco);
 
+    // Client totals
     const ClientTransaction = mongoose.model('ClientTransaction');
-    
-    // Warning: Loop queries. Optimized approach would be aggregate.
-    for (const c of clientes) {
-        const saldo = await getLastClientSaldo(c._id);
-        totalDividas += saldo;
+    const clientTotals = await getTotals(ClientTransaction);
 
-        // Sum for globals? Or just keep balance?
-        // User asked for "Total Entradas / Saídas" global.
-        const stats = await ClientTransaction.aggregate([
-            { $match: { clienteId: c._id } },
-            { $group: { _id: null, totalEntrada: { $sum: "$entrada" }, totalSaida: { $sum: "$saida" } } }
-        ]);
-        if (stats.length > 0) {
-            totalEntradasAll += stats[0].totalEntrada;
-            totalSaidasAll += stats[0].totalSaida;
-        }
-    }
-    
-    // Monthly Data for Graph (All Clients Consolidated)
+    // Supplier totals
+    const SupplierTransaction = mongoose.model('SupplierTransaction');
+    const supplierTotals = await getTotals(SupplierTransaction);
+
+    const totalCaixa = caixaTotals.entrada - caixaTotals.saida;
+    const totalBancos = bancoTotals.entrada - bancoTotals.saida;
+    const totalDividas = clientTotals.entrada - clientTotals.saida;
+    const totalFornecedores = supplierTotals.entrada - supplierTotals.saida;
+
+    // Monthly Data for Graph (Current Year)
     const currentYear = new Date().getFullYear();
     const monthlyStats = await ClientTransaction.aggregate([
-        { $match: { ano: currentYear } },
-        { 
-            $group: { 
-                _id: "$mes", 
-                entrada: { $sum: "$entrada" }, 
-                saida: { $sum: "$saida" } 
-            } 
-        },
-        { $sort: { _id: 1 } }
+      { $match: { ano: currentYear } },
+      {
+        $group: {
+          _id: "$mes",
+          entrada: { $sum: "$entrada" },
+          saida: { $sum: "$saida" }
+        }
+      },
+      { $sort: { _id: 1 } }
     ]);
-    
-    res.json({ 
-        totalCaixa, 
-        totalBancos, 
-        totalDividas, // Global Balance of Clients
-        totalEntradas: totalEntradasAll,
-        totalSaidas: totalSaidasAll,
-        monthlyStats
+
+    res.json({
+      totalCaixa,
+      totalBancos,
+      totalDividas,
+      totalFornecedores,
+      totalEntradas: clientTotals.entrada,
+      totalSaidas: clientTotals.saida,
+      monthlyStats
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Helper for Recalculating Balances (Sequential based on Date)
+const recalculateBalances = async (Model, filter = {}) => {
+  // Get all transactions sorted by date and then by creation order
+  const transactions = await Model.find(filter).sort({ data: 1, createdAt: 1 });
+  let currentBalance = 0;
+
+  for (const trx of transactions) {
+    currentBalance += (trx.entrada || 0) - (trx.saida || 0);
+    await Model.findByIdAndUpdate(trx._id, { saldo: currentBalance });
+  }
+};
 
 // 2. Caixa CRUD
 app.get('/api/caixa', authMiddleware, async (req, res) => {
@@ -124,13 +121,9 @@ app.get('/api/caixa', authMiddleware, async (req, res) => {
 
 app.post('/api/caixa', authMiddleware, async (req, res) => {
   try {
-    // Auto-calculate saldo? Or allow manual?
-    // Let's assume manual entry or simple calc based on previous.
-    // Excel usually has manual control. Let's just save what is sent, 
-    // BUT we can improve this by recalculating saldo based on previous record if needed.
-    // For simplicity and flexibility: save provided data.
     const newItem = new Caixa(req.body);
     await newItem.save();
+    await recalculateBalances(Caixa);
     res.json(newItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -140,6 +133,7 @@ app.post('/api/caixa', authMiddleware, async (req, res) => {
 app.put('/api/caixa/:id', authMiddleware, async (req, res) => {
   try {
     const updatedItem = await Caixa.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    await recalculateBalances(Caixa);
     res.json(updatedItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -149,6 +143,7 @@ app.put('/api/caixa/:id', authMiddleware, async (req, res) => {
 app.delete('/api/caixa/:id', authMiddleware, async (req, res) => {
   try {
     await Caixa.findByIdAndDelete(req.params.id);
+    await recalculateBalances(Caixa);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -169,6 +164,7 @@ app.post('/api/bancos', authMiddleware, async (req, res) => {
   try {
     const newItem = new Banco(req.body);
     await newItem.save();
+    await recalculateBalances(Banco);
     res.json(newItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -178,6 +174,7 @@ app.post('/api/bancos', authMiddleware, async (req, res) => {
 app.put('/api/bancos/:id', authMiddleware, async (req, res) => {
   try {
     const updatedItem = await Banco.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    await recalculateBalances(Banco);
     res.json(updatedItem);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -187,6 +184,7 @@ app.put('/api/bancos/:id', authMiddleware, async (req, res) => {
 app.delete('/api/bancos/:id', authMiddleware, async (req, res) => {
   try {
     await Banco.findByIdAndDelete(req.params.id);
+    await recalculateBalances(Banco);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -246,12 +244,37 @@ app.get('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
 app.post('/api/clientes/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const newItem = new (mongoose.model('ClientTransaction'))({
-        ...req.body,
-        clienteId: id
+    const ClientTransaction = mongoose.model('ClientTransaction');
+    const newItem = new ClientTransaction({
+      ...req.body,
+      clienteId: id
     });
     await newItem.save();
+    await recalculateBalances(ClientTransaction, { clienteId: id });
     res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Clientes Transactions (Sub-resource pattern)
+app.put('/api/clientes/:clientId/transactions/:id', authMiddleware, async (req, res) => {
+  try {
+    const ClientTransaction = mongoose.model('ClientTransaction');
+    const updated = await ClientTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    await recalculateBalances(ClientTransaction, { clienteId: req.params.clientId });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/clientes/:clientId/transactions/:id', authMiddleware, async (req, res) => {
+  try {
+    const ClientTransaction = mongoose.model('ClientTransaction');
+    await ClientTransaction.findByIdAndDelete(req.params.id);
+    await recalculateBalances(ClientTransaction, { clienteId: req.params.clientId });
+    res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -309,12 +332,37 @@ app.get('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) =
 app.post('/api/fornecedores/:id/transactions', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const newItem = new (mongoose.model('SupplierTransaction'))({
-        ...req.body,
-        fornecedorId: id
+    const SupplierTransaction = mongoose.model('SupplierTransaction');
+    const newItem = new SupplierTransaction({
+      ...req.body,
+      fornecedorId: id
     });
     await newItem.save();
+    await recalculateBalances(SupplierTransaction, { fornecedorId: id });
     res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fornecedores Transactions (Sub-resource pattern)
+app.put('/api/fornecedores/:fornecedorId/transactions/:id', authMiddleware, async (req, res) => {
+  try {
+    const SupplierTransaction = mongoose.model('SupplierTransaction');
+    const updated = await SupplierTransaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    await recalculateBalances(SupplierTransaction, { fornecedorId: req.params.fornecedorId });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/fornecedores/:fornecedorId/transactions/:id', authMiddleware, async (req, res) => {
+  try {
+    const SupplierTransaction = mongoose.model('SupplierTransaction');
+    await SupplierTransaction.findByIdAndDelete(req.params.id);
+    await recalculateBalances(SupplierTransaction, { fornecedorId: req.params.fornecedorId });
+    res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

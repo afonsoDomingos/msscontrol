@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit, Printer, FileText, Download, ChevronLeft, ChevronRight, Calendar, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Edit, Printer, FileText, Download, ChevronLeft, ChevronRight, Calendar, CheckCircle2, FileDown } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Modal from './Modal';
 import { api } from '../data/api';
 import logo from '../assets/logo.png';
@@ -166,6 +168,67 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
     document.body.removeChild(link);
   };
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.addImage(logo, 'PNG', 15, 10, 25, 25);
+    doc.setFontSize(22);
+    doc.setTextColor(230, 57, 70); // Brand Red
+    doc.text('MSS Control', 45, 20);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139); // Text Gray
+    doc.text('BUSINESS SUPPORT & FINANCIAL SERVICES', 45, 26);
+
+    doc.setDrawColor(230, 57, 70);
+    doc.setLineWidth(0.5);
+    doc.line(15, 38, pageWidth - 15, 38);
+
+    doc.setFontSize(14);
+    doc.setTextColor(15, 23, 42); // Navy Dark
+    doc.text(`EXTRATO: ${title.toUpperCase()}`, 15, 48);
+
+    doc.setFontSize(9);
+    doc.text(`Emissão: ${new Intl.DateTimeFormat('pt-MZ', { dateStyle: 'full', timeStyle: 'short' }).format(new Date())}`, 15, 54);
+
+    // AutoTable
+    const tableHeaders = [['N/O', 'Data', 'Descrição', 'Entidade', 'Débito', 'Crédito', 'Saldo']];
+    const tableData = data.map(r => [
+      r.n_ordem,
+      r.data,
+      r.descricao,
+      r.entidade,
+      r.entrada > 0 ? formatCurrency(r.entrada) : '-',
+      r.saida > 0 ? formatCurrency(r.saida) : '-',
+      formatCurrency(r.saldo)
+    ]);
+
+    doc.autoTable({
+      startY: 62,
+      head: tableHeaders,
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 9, halign: 'center' },
+      bodyStyles: { fontSize: 8, textColor: [51, 65, 85] },
+      columnStyles: {
+        0: { cellWidth: 10 },
+        4: { halign: 'right' },
+        5: { halign: 'right' },
+        6: { halign: 'right', fontStyle: 'bold' }
+      },
+      didDrawPage: (data) => {
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Vibe Security - Sistema de Integridade Financeira | Página ${doc.internal.getNumberOfPages()}`, 15, doc.internal.pageSize.getHeight() - 10);
+      }
+    });
+
+    doc.save(`MSS_Relatorio_${title}_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   const handleLiquidate = async () => {
     if (!liquidateItem) return;
     try {
@@ -191,6 +254,10 @@ const LedgerTable = ({ title, endpoint, entityLabel = 'Entidade' }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{title}</h2>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button className="btn-ghost" onClick={handleExportPDF} title="Gerar PDF Profissional">
+              <FileDown size={18} />
+              PDF
+            </button>
             <button className="btn-ghost" onClick={handleExportCSV} title="Exportar Excel (CSV)">
               <Download size={18} />
               Excel
